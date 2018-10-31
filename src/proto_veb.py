@@ -1,22 +1,16 @@
 from math import sqrt, floor
 
 
-def build_tree(u):
-    if u == 2:
-        V = ProtovEB(2)
-        V.arr = [0, 0]
-        return V
-    else:  # u > 2
-        root_u = floor(sqrt(u))
-        V = ProtovEB(u)  # set V.u = u
-        V.summary = build_tree(root_u)
-        V.cluster = [build_tree(root_u) for _ in range(root_u)]
-        return V
-
-
 class ProtovEB:
     def __init__(self, u):
-        self.u = u
+        if u == 2:
+            self.u = 2
+            self.arr = [0, 0]
+        else:  # u > 2
+            root_u = floor(sqrt(u))
+            self.u = u  # set V.u = u
+            self.summary = ProtovEB(root_u)
+            self.cluster = [ProtovEB(root_u) for _ in range(root_u)]
 
     def high(self, x):
         """
@@ -112,7 +106,7 @@ def SUCCESSOR(V, x):
 
 
 if __name__ == "__main__":
-    V = build_tree(u=16)
+    V = ProtovEB(u=16)
     INSERT(V, 2)
     INSERT(V, 3)
     INSERT(V, 4)
