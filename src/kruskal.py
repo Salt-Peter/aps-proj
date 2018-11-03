@@ -9,9 +9,9 @@ class graph:
     #This function inserts a new edge to the graph
     def Insert_edge(self,u,v,w): 
         self.graph.append([u,v,w]) 
-    
+   
+    #Initialises each node with rank 0 and sets each node's parent as itself
     def Make_set(self,parent,rank):
-        # Create V subsets with single elements 
         for node in range(self.V): 
            parent.append(node) 
            rank.append(0) 
@@ -29,7 +29,7 @@ class graph:
         x_parent = self.find(parent, x) 
         y_parent = self.find(parent, y) 
         
-        #Ifsets have same rank then increment the rank of the set 
+        #If sets have same rank then increment the rank of the set by 1
         if rank[x_parent]==rank[y_parent] : 
             parent[y_parent] = x_parent 
             rank[x_parent] += 1        
@@ -44,6 +44,7 @@ class graph:
         for i in range(len(parent)):
             print(i , parent[i],"," ,end=" ")        
         print()
+
     def Kruskal(self): 
   
         Spanning_Tree =[] #This will store the Spanning_Tree
@@ -65,7 +66,8 @@ class graph:
             y = self.find(parent ,v) 
             
             g.print_parent(parent)
-            #check if cycle will be formed by adding this node 
+           
+           #check if cycle will be formed by adding this node 
             if x != y: 
                 mst_index = mst_index + 1     
                 Spanning_Tree.append([u,v,w]) 
@@ -100,5 +102,4 @@ g.Insert_edge(0,3,2)
 g.Insert_edge(3,1,2)
   
 g.Kruskal() 
-
 
