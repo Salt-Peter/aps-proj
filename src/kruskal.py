@@ -4,7 +4,7 @@ class graph:
     
     def __init__(self,vertices): 
         self.V= vertices # vertices 
-        self.graph = []  #List to store graph
+        self.graph = []  #List to store graph in the [u,v,w] form ,which indicates a weigted edge incident to nodes u and v
                                 
     #This function inserts a new edge to the graph
     def Insert_edge(self,u,v,w): 
