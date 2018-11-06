@@ -1,28 +1,20 @@
 class Graph:
-
     def __init__(self, vertices):
         self.V = vertices  # vertices
-        # List to store graph in the [u,v,w] form ,
+        # List to store graph in the (u,v,w) form ,
         # which indicates a weighted edge incident to nodes u and v
-        self.graph = []
+        self.edges = []
 
     # This function inserts a new edge to the graph
     def insert_edge(self, u, v, w):
-        self.graph.append([u, v, w])
+        self.edges.append((u, v, w))
 
-        # Initialises each node with rank 0 and sets each node's parent as itself
-
-    def make_set(self, parent, rank):
-        for node in range(self.V):
-            parent.append(node)
-            rank.append(0)
-
-            # Find_set implementation using Path compression heuristic
-
+    # Find_set implementation using Path compression heuristic
     def find(self, parent, i):
+        """Returns parent of current node."""
         if parent[i] == i:
             return i
-            # return self.find(parent, parent[i])
+
         parent[i] = self.find(parent, parent[i])  # Recursively updates the parent of each node hence path compression.
         return parent[i]
 
@@ -44,63 +36,56 @@ class Graph:
 
     def print_parent(self, parent):
         for i in range(len(parent)):
-            print(i, parent[i], ",", end=" ")
+            print(parent[i], ",", end=" ")
         print()
 
     def kruskal(self):
+        mst = []  # This will store the resulting Minimum Spanning Tree
 
-        spanning_tree = []  # This will store the Spanning Tree
+        self.edges.sort(key=lambda item: item[2])  # Sort the edges
 
-        # Sort the edges
-        self.graph = sorted(self.graph, key=lambda item: item[2])
+        rank = [0] * self.V  # Initialize each node's rank as 0
+        parent = [i for i in range(self.V)]  # set each node's parent as itself
 
-        parent = []
-        rank = []
-        g.make_set(parent, rank)
-        index = 0
-        mst_index = 0
+        index = 0  # an index to iterate over sorted edges of the graph
+        mst_index = 0  # an index to write data into mst
+
         # We pick the V-1 edges from the sorted edges in graph
         while mst_index < self.V - 1:
 
-            # Get the smallest edge from the graph
-            u, v, w = self.graph[index]
-            index = index + 1
-            x = self.find(parent, u)
-            y = self.find(parent, v)
+            # Pick the smallest edge and increment index for next iteration
+            u, v, w = self.edges[index]
+            index += 1
+            u_parent = self.find(parent, u)
+            v_parent = self.find(parent, v)
 
-            g.print_parent(parent)
+            # g.print_parent(parent)
 
-            # check if cycle will be formed by adding this node
-            if x != y:
-                mst_index = mst_index + 1
-                spanning_tree.append([u, v, w])
-                self.union(parent, rank, x, y)
+            # If including this edge does not form a cycle
+            if u_parent != v_parent:
+                # include it in result
+                mst.append((u, v, w))
+                mst_index += 1  # increment index for next iteration
+                self.union(parent, rank, u_parent, v_parent)
 
-                # Print the Minimum cost spanning tree
+            # else discard this edge
+
+        # Print the Minimum cost spanning tree
         print("The minimum spanning tree is as follows")
-        for u, v, weight in spanning_tree:
+        cost = 0
+        for u, v, weight in mst:
             print("%d -- %d == %d" % (u, v, weight))
+            cost += weight
 
-        g.print_parent(parent)
+        return cost
+        # g.print_parent(parent)
 
 
-# Sample test cases
-# g = graph(6) 
-# g.Insert_edge(0, 1, 1) 
-# g.Insert_edge(0, 2, 2)
-# g.Insert_edge(0, 3, 1) 
-# g.Insert_edge(1, 3, 1)
-# g.Insert_edge(1, 2, 2) 
-# g.Insert_edge(1, 4, 4) 
-# g.Insert_edge(1, 5, 5)
-# g.Insert_edge(2, 4, 4)
-# g.Insert_edge(4, 5, 4) 
+if __name__ == "__main__":
+    V, E = map(int, input().split())
+    g = Graph(V)
+    for _ in range(E):
+        u, v, w = map(int, input().split())
+        g.insert_edge(u, v, w)
 
-g = Graph(4)
-g.insert_edge(0, 1, 1)
-g.insert_edge(0, 2, 1)
-g.insert_edge(1, 2, 1)
-g.insert_edge(0, 3, 2)
-g.insert_edge(3, 1, 2)
-
-g.kruskal()
+    print(g.kruskal())
