@@ -8,6 +8,8 @@ class VEBTree:
         self.lower_root = 2 ** floor(log2(u) / 2)  # eg 2
         self.min = None
         self.max = None
+        self.min_cnt = 0
+        self.max_cnt = 0
 
         if u == 2:
             pass
@@ -89,117 +91,105 @@ def SUCCESSOR(V, x):
                 return V.index(succ_cluster, offset)
 
 
-def INSERT_EMPTY(V, x):
+def INSERT_EMPTY(V, x, n):
     V.min = V.max = x
+    V.min_cnt = V.max_cnt = n
 
 
-def INSERT(V, x):
+def INSERT(V, x, n=1):
     # V is an empty vEB Tree (Base case)
     if V.min is None:
-        INSERT_EMPTY(V, x)
+        INSERT_EMPTY(V, x, n)
         return
 
-    # else V is non empty
-    else:
-        if x < V.min:
-            # If x < min, then x needs to become the new min.
-            # But we don't want to lose the original min.
-            # So we need to insert it into one of V's clusters.
+    if x == V.max:
+        V.max_cnt += n
+    if x == V.min:
+        V.min_cnt += n
+        return
 
-            # exchange x and V.min
-            x, V.min = V.min, x
-            # now insert the original min (now x) into one of the V's clusters
+    if x < V.min:
+        x, V.min = V.min, x
+        n, V.min_cnt = V.min_cnt, n
 
-        if V.u > 2:
-            # Non base case
-
-            # check whether the cluster that x will go into is currently empty
-            # checking MINIMUM or MAXIMUM is sufficient to check for empty cluster
-            if MINIMUM(V.cluster[V.high(x)]) is None:
-                # insert x's cluster number into summary
-                INSERT(V.summary, V.high(x))
-                # insert x into the empty cluster
-                INSERT_EMPTY(V.cluster[V.high(x)], V.low(x))
-
-            else:
-                # x's cluster is not empty
-                # so we do not need to update the summary, since x's cluster number is already a member of the summary.
-
-                # insert x into its cluster
-                INSERT(V.cluster[V.high(x)], V.low(x))
-
-        # update max
-        if x > V.max:
-            V.max = x
-
-
-# assumes that x is currently an element in the set
-# represented by the vEB tree V.
-# this means if the tree contains only one key
-# then no matter what value of x you pass to delete,
-# the existing tree element will be deleted
-def DELETE(V, x):
-    # exactly one element in the tree
-    if V.min == V.max:
-        V.min = V.max = None
-
-    # Base case: set min and max to the one remaining element.
-    elif V.u == 2:
-        # if exactly 2 elements exist
-        if x == 0:  # and the key to be deleted is 0
-            # then set min and max to key 1
-            V.max = V.min = 1
-        else:  # else key to be deleted is 1
-            # so set min and max to key 0
-            V.max = V.min = 0
-
-    else:
-        # we will have to delete an element from a cluster
-
-        if x == V.min:  # we need to delete the min element
-            # but before that we need to find the new min which is some other element within one of V's clusters
-
-            # first_cluster = the cluster id that contains the lowest element other than min
-            first_cluster = MINIMUM(V.summary)  # cluster id of cluster containing new min
-
-            # x = lowest element in the found cluster
-            x = V.index(first_cluster, MINIMUM(V.cluster[first_cluster]))
-
-            # x becomes new min
-            V.min = x
-
-            # now x will be deleted from its cluster
-
-        # Now we need to delete element x from its cluster,
-        # whether x was the value originally passed to DELETE()
-        # or x is the element becoming the new minimum.
-        DELETE(V.cluster[V.high(x)], V.low(x))  # delete x from its cluster
-
-        # That cluster might now become empty
+    if V.u > 2:
         if MINIMUM(V.cluster[V.high(x)]) is None:
-            # if it does, then we need to remove x's cluster number from the summary,
-            DELETE(V.summary, V.high(x))
+            INSERT(V.summary, V.high(x))
+            INSERT_EMPTY(V.cluster[V.high(x)], V.low(x), n)
 
-            # After updating the summary, we might need to update max if x is max
-            if x == V.max:  # check whether we are deleting max element of V
+        else:
+            INSERT(V.cluster[V.high(x)], V.low(x), n)
 
-                # summary_max = the number of the highest numbered nonempty cluster.
-                # This works bcoz we have already recursively called DELETE on V.summary
-                # and so V.summary.max has already been updated.
+    if x > V.max:
+        V.max = x
+        V.max_cnt = n
+
+
+def DELETE(V, x, n=1):
+    if V.min == V.max:
+        if V.min is None or V.min_cnt == n:
+            V.min = V.max = None
+            V.min_cnt = 0
+        else:
+            V.min_cnt -= n
+        V.max_cnt = V.min_cnt
+        return
+
+    if V.u == 2:
+        if x == 0:
+            V.min_cnt -= n
+            if V.min_cnt == 0:
+                V.min = 1
+                V.min_cnt = V.max_cnt
+        else:
+            V.max_cnt -= n
+            if V.max_cnt == 0:
+                V.max = 0
+                V.max_cnt = V.min_cnt
+        return
+    next_n = n
+
+    if x == V.min:
+        if V.min_cnt > n:
+            V.min_cnt -= n
+            return
+
+        first_cluster = MINIMUM(V.summary)
+        x = V.index(first_cluster,
+                    MINIMUM(V.cluster[first_cluster]))
+        V.min = x
+        V.min_cnt = V.cluster[first_cluster].min_cnt
+        next_n = V.cluster[first_cluster].min_cnt
+
+    DELETE(V.cluster[V.high(x)], V.low(x), next_n)
+
+    if MINIMUM(V.cluster[V.high(x)]) is None:
+        DELETE(V.summary, V.high(x))
+        if x == V.max:
+            if V.max == V.min:
+                V.max_cnt = V.min_cnt
+                return
+            V.max_cnt -= n
+            if V.max_cnt == 0:
                 summary_max = MAXIMUM(V.summary)
 
                 if summary_max is None:
-                    # If all of V's clusters are empty, then the only remaining element in V is min
-                    V.max = V.min  # update max accordingly
-
+                    V.max = V.min
+                    V.max_cnt = V.min_cnt
                 else:
-                    # else set max to the maximum element in the highest numbered cluster
-                    V.max = V.index(summary_max, MAXIMUM(V.cluster[summary_max]))
+                    V.max = V.index(summary_max,
+                                    MAXIMUM(V.cluster[summary_max]))
+                    V.max_cnt = V.cluster[summary_max].max_cnt
 
-        # else if the cluster did not become empty (there is at least one element in x's cluster even after deleting x.)
-        # then although we do not have to update the summary in this case, we might have to update max.
-        elif x == V.max:  # if max element was deleted, update max
-            V.max = V.index(V.high(x), MAXIMUM(V.cluster[V.high(x)]))
+    elif x == V.max:
+        if V.max == V.min:
+            V.max_cnt = V.min_cnt
+            return
+        V.max_cnt -= n
+        if V.max_cnt == 0:
+            V.max = V.index(V.high(x),
+                            MAXIMUM(V.cluster[V.high(x)]))
+            V.max_cnt = V.cluster[V.high(x)].max_cnt
 
 
 if __name__ == "__main__":
@@ -211,6 +201,8 @@ if __name__ == "__main__":
     INSERT(V, 7)
     INSERT(V, 14)
     INSERT(V, 15)
+    INSERT(V, 15)
+    DELETE(V, 15)
 
     for i in range(16):
         print(MEMBER(V, i), end=" ")
