@@ -82,7 +82,11 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
 
-    plt.plot(num_list, x_list)
-    plt.plot(num_list, y_list)
-    plt.plot(num_list, z_list)
+    plt.plot(num_list, x_list, label="Default")
+    plt.plot(num_list, y_list, label="vEB Tree impl")
+    plt.plot(num_list, z_list, label="Fibonacci heap impl")
+    plt.legend(loc=0)
+    plt.title("Comparison")
+    plt.xlabel("Input size")
+    plt.ylabel("Time taken")
     plt.show()
