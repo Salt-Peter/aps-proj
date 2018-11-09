@@ -1,4 +1,4 @@
-from src.vEB_with_dups_n_satellite import VEBTree, INSERT, MINIMUM, GET_SATELLITE, DELETE
+from vEB_with_dups_n_satellite import VEBTree, INSERT, MINIMUM, GET_SATELLITE, DELETE
 
 # In order to implement Kruskal using vEB tree we need to know the range of keys beforehand
 # for implementing Kruskal we will use the edge weights as the keys.
