@@ -72,10 +72,10 @@ class Graph:
             # else discard this edge
 
         # Print the Minimum cost spanning tree
-        print("The minimum spanning tree is as follows")
+        # print("The minimum spanning tree is as follows")
         cost = 0
         for u, v, weight in mst:
-            print("%d -- %d == %d" % (u, v, weight))
+            # print("%d -- %d == %d" % (u, v, weight))
             cost += weight
 
         return cost
