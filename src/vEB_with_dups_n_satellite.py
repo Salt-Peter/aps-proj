@@ -10,6 +10,8 @@ class VEBTree:
         self.max = None
         self.min_cnt = 0
         self.max_cnt = 0
+        self.min_data = None
+        self.max_data = None
 
         if u == 2:
             pass
@@ -91,67 +93,98 @@ def SUCCESSOR(V, x):
                 return V.index(succ_cluster, offset)
 
 
-def INSERT_EMPTY(V, x, n):
+def GET_SATELLITE(V, x):
+    if x == V.min:
+        return V.min_data
+    if x == V.max:
+        return V.max_data
+    if V.u == 2:
+        return None
+
+    return GET_SATELLITE(V.cluster[V.high(x)], V.low(x))
+
+
+def INSERT_EMPTY(V, x, data, n):
     V.min = V.max = x
     V.min_cnt = V.max_cnt = n
+    V.min_data = data
+    V.max_data = data
 
 
-def INSERT(V, x, n=1):
+def INSERT(V, x, data, n=1):
     # V is an empty vEB Tree (Base case)
     if V.min is None:
-        INSERT_EMPTY(V, x, n)
+        INSERT_EMPTY(V, x, data, n)
         return
 
     if x == V.max:
         V.max_cnt += n
+        V.max_data.extend(data)
     if x == V.min:
         V.min_cnt += n
+        V.min_data.extend(data)
         return
 
     if x < V.min:
         x, V.min = V.min, x
         n, V.min_cnt = V.min_cnt, n
+        data, V.min_data = V.min_data, data
 
     if V.u > 2:
         if MINIMUM(V.cluster[V.high(x)]) is None:
-            INSERT(V.summary, V.high(x))
-            INSERT_EMPTY(V.cluster[V.high(x)], V.low(x), n)
+            INSERT(V.summary, V.high(x), data)
+            INSERT_EMPTY(V.cluster[V.high(x)], V.low(x), data, n)
 
         else:
-            INSERT(V.cluster[V.high(x)], V.low(x), n)
+            INSERT(V.cluster[V.high(x)], V.low(x), data, n)
 
     if x > V.max:
         V.max = x
         V.max_cnt = n
+        V.max_data = data
 
 
 def DELETE(V, x, n=1):
+    # unique key in tree
     if V.min == V.max:
         if V.min is None or V.min_cnt == n:
             V.min = V.max = None
+            V.min_data = V.max_data = None
             V.min_cnt = 0
+            V.max_cnt = 0
         else:
+            # more copies of the element than is to be removed
             V.min_cnt -= n
-        V.max_cnt = V.min_cnt
+            V.max_cnt -= n
+            del V.min_data[:n]  # pops n elements from front of the list
+            del V.max_data[:n]  # pops n elements from front of the list
+
         return
 
     if V.u == 2:
-        if x == 0:
+        if x == 0:  # element to be removed is the min element
             V.min_cnt -= n
-            if V.min_cnt == 0:
+            del V.min_data[:n]
+
+            if V.min_cnt == 0:  # all elements of min key removed
                 V.min = 1
                 V.min_cnt = V.max_cnt
+                V.min_data = V.max_data
         else:
             V.max_cnt -= n
+            del V.max_data[:n]
+
             if V.max_cnt == 0:
                 V.max = 0
                 V.max_cnt = V.min_cnt
+                V.max_data = V.min_data
         return
     next_n = n
 
     if x == V.min:
         if V.min_cnt > n:
             V.min_cnt -= n
+            del V.min_data[:n]
             return
 
         first_cluster = MINIMUM(V.summary)
@@ -159,6 +192,8 @@ def DELETE(V, x, n=1):
                     MINIMUM(V.cluster[first_cluster]))
         V.min = x
         V.min_cnt = V.cluster[first_cluster].min_cnt
+        V.min_data = V.cluster[first_cluster].min_data
+
         next_n = V.cluster[first_cluster].min_cnt
 
     DELETE(V.cluster[V.high(x)], V.low(x), next_n)
@@ -168,41 +203,46 @@ def DELETE(V, x, n=1):
         if x == V.max:
             if V.max == V.min:
                 V.max_cnt = V.min_cnt
+                V.max_data = V.min_data
                 return
             V.max_cnt -= n
+            del V.max_data[:n]
+
             if V.max_cnt == 0:
                 summary_max = MAXIMUM(V.summary)
 
                 if summary_max is None:
                     V.max = V.min
                     V.max_cnt = V.min_cnt
+                    V.max_data = V.min_data
                 else:
                     V.max = V.index(summary_max,
                                     MAXIMUM(V.cluster[summary_max]))
                     V.max_cnt = V.cluster[summary_max].max_cnt
+                    V.max_data = V.cluster[summary_max].max_data
 
     elif x == V.max:
         if V.max == V.min:
             V.max_cnt = V.min_cnt
+            V.max_data = V.min_data
             return
         V.max_cnt -= n
+        del V.max_data[:n]
+
         if V.max_cnt == 0:
             V.max = V.index(V.high(x),
                             MAXIMUM(V.cluster[V.high(x)]))
             V.max_cnt = V.cluster[V.high(x)].max_cnt
+            V.max_data = V.cluster[V.high(x)].max_data
 
 
 if __name__ == "__main__":
     V = VEBTree(u=16)
-    INSERT(V, 2)
-    INSERT(V, 3)
-    INSERT(V, 4)
-    INSERT(V, 5)
-    INSERT(V, 7)
-    INSERT(V, 14)
-    INSERT(V, 15)
-    INSERT(V, 15)
-    DELETE(V, 15)
+    INSERT(V, 2, [(0, 1, 2)])
+    INSERT(V, 3, [(2, 1, 3)])
+    INSERT(V, 4, [(0, 1, 4)])
+    INSERT(V, 4, [(1, 2, 4)])
+    INSERT(V, 4, [(1, 3, 4)])
 
     for i in range(16):
         print(MEMBER(V, i), end=" ")
@@ -214,8 +254,21 @@ if __name__ == "__main__":
 
     print()
 
-    DELETE(V, 15)
-    DELETE(V, 14)
+    print("Object with key =2", GET_SATELLITE(V, 2))
+    print("Object with key =3", GET_SATELLITE(V, 3))
+    print("Object with key =4", GET_SATELLITE(V, 4))
+
+    DELETE(V, 4)
     print(MAXIMUM(V))
+    print("Object with key =4", GET_SATELLITE(V, 4))
+
+    DELETE(V, 4)
+    print(MAXIMUM(V))
+    print("Object with key =4", GET_SATELLITE(V, 4))
+
+    DELETE(V, 4)
+    print(MAXIMUM(V))
+    print("Object with key =4", GET_SATELLITE(V, 4))
+
     DELETE(V, 2)
     print(MINIMUM(V))
