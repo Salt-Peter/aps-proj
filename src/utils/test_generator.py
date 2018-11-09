@@ -26,6 +26,7 @@ if __name__ == "__main__":
     import sys
 
     filename = input("Enter file name in which to write.")
+    V = int(input())
     if filename:
         sys.stdout = open("tests/input/" + filename, 'wt')
-        generate_dense(4)
+        generate_dense(V)
