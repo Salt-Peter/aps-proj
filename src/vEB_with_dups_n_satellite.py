@@ -1,3 +1,4 @@
+from copy import copy
 from math import floor, ceil, log2
 
 
@@ -107,8 +108,8 @@ def GET_SATELLITE(V, x):
 def INSERT_EMPTY(V, x, data, n):
     V.min = V.max = x
     V.min_cnt = V.max_cnt = n
-    V.min_data = data
-    V.max_data = data
+    V.min_data = copy(data)
+    V.max_data = copy(data)
 
 
 def INSERT(V, x, data, n=1):
@@ -128,20 +129,20 @@ def INSERT(V, x, data, n=1):
     if x < V.min:
         x, V.min = V.min, x
         n, V.min_cnt = V.min_cnt, n
-        data, V.min_data = V.min_data, data
+        data, V.min_data = copy(V.min_data), copy(data)
 
     if V.u > 2:
         if MINIMUM(V.cluster[V.high(x)]) is None:
-            INSERT(V.summary, V.high(x), data)
-            INSERT_EMPTY(V.cluster[V.high(x)], V.low(x), data, n)
+            INSERT(V.summary, V.high(x), copy(data))
+            INSERT_EMPTY(V.cluster[V.high(x)], V.low(x), copy(data), n)
 
         else:
-            INSERT(V.cluster[V.high(x)], V.low(x), data, n)
+            INSERT(V.cluster[V.high(x)], V.low(x), copy(data), n)
 
     if x > V.max:
         V.max = x
         V.max_cnt = n
-        V.max_data = data
+        V.max_data = copy(data)
 
 
 def DELETE(V, x, n=1):
