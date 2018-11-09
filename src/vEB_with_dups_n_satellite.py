@@ -150,7 +150,8 @@ def DELETE(V, x, n=1):
     if V.min == V.max:
         if V.min is None or V.min_cnt == n:
             V.min = V.max = None
-            V.min_data = V.max_data = None
+            V.min_data = None
+            V.max_data = None
             V.min_cnt = 0
             V.max_cnt = 0
         else:
@@ -170,7 +171,7 @@ def DELETE(V, x, n=1):
             if V.min_cnt == 0:  # all elements of min key removed
                 V.min = 1
                 V.min_cnt = V.max_cnt
-                V.min_data = V.max_data
+                V.min_data = copy(V.max_data)
         else:
             V.max_cnt -= n
             del V.max_data[:n]
@@ -178,7 +179,7 @@ def DELETE(V, x, n=1):
             if V.max_cnt == 0:
                 V.max = 0
                 V.max_cnt = V.min_cnt
-                V.max_data = V.min_data
+                V.max_data = copy(V.min_data)
         return
     next_n = n
 
@@ -193,7 +194,7 @@ def DELETE(V, x, n=1):
                     MINIMUM(V.cluster[first_cluster]))
         V.min = x
         V.min_cnt = V.cluster[first_cluster].min_cnt
-        V.min_data = V.cluster[first_cluster].min_data
+        V.min_data = copy(V.cluster[first_cluster].min_data)
 
         next_n = V.cluster[first_cluster].min_cnt
 
@@ -204,7 +205,7 @@ def DELETE(V, x, n=1):
         if x == V.max:
             if V.max == V.min:
                 V.max_cnt = V.min_cnt
-                V.max_data = V.min_data
+                V.max_data = copy(V.min_data)
                 return
             V.max_cnt -= n
             del V.max_data[:n]
@@ -215,17 +216,17 @@ def DELETE(V, x, n=1):
                 if summary_max is None:
                     V.max = V.min
                     V.max_cnt = V.min_cnt
-                    V.max_data = V.min_data
+                    V.max_data = copy(V.min_data)
                 else:
                     V.max = V.index(summary_max,
                                     MAXIMUM(V.cluster[summary_max]))
                     V.max_cnt = V.cluster[summary_max].max_cnt
-                    V.max_data = V.cluster[summary_max].max_data
+                    V.max_data = copy(V.cluster[summary_max].max_data)
 
     elif x == V.max:
         if V.max == V.min:
             V.max_cnt = V.min_cnt
-            V.max_data = V.min_data
+            V.max_data = copy(V.min_data)
             return
         V.max_cnt -= n
         del V.max_data[:n]
@@ -234,7 +235,7 @@ def DELETE(V, x, n=1):
             V.max = V.index(V.high(x),
                             MAXIMUM(V.cluster[V.high(x)]))
             V.max_cnt = V.cluster[V.high(x)].max_cnt
-            V.max_data = V.cluster[V.high(x)].max_data
+            V.max_data = copy(V.cluster[V.high(x)].max_data)
 
 
 if __name__ == "__main__":
