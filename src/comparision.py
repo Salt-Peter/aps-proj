@@ -1,8 +1,8 @@
 import timeit
 
-import kruskal_list_sort as kruskal_list_sort
-import kruskal_veb as kruskal_veb
-import kruskal_fib_heap as kruskal_fib_heap
+import kruskal_impl.kruskal_list_sort as kruskal_list_sort
+import kruskal_impl.kruskal_veb as kruskal_veb
+import kruskal_impl.kruskal_fib_heap as kruskal_fib_heap
 
 
 def timeit_kruskal_list_sort(V, E, edges):
@@ -30,6 +30,19 @@ def timeit_kruskal_fib_heap(V, E, edges):
         g.insert_edge(u, v, w)
 
     g.kruskal()
+
+
+def plotter(num_list, x_list, y_list, z_list):
+    import matplotlib.pyplot as plt
+
+    plt.plot(num_list, x_list, label="Default")
+    plt.plot(num_list, y_list, label="vEB Tree impl")
+    plt.plot(num_list, z_list, label="Fibonacci heap impl")
+    plt.legend(loc=0)
+    plt.title("Comparison")
+    plt.xlabel("Input size")
+    plt.ylabel("Time taken")
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -80,13 +93,4 @@ if __name__ == "__main__":
 
         print()
 
-    import matplotlib.pyplot as plt
-
-    plt.plot(num_list, x_list, label="Default")
-    plt.plot(num_list, y_list, label="vEB Tree impl")
-    plt.plot(num_list, z_list, label="Fibonacci heap impl")
-    plt.legend(loc=0)
-    plt.title("Comparison")
-    plt.xlabel("Input size")
-    plt.ylabel("Time taken")
-    plt.show()
+    plotter(num_list, x_list, y_list, z_list)
