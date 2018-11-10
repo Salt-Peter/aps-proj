@@ -35,9 +35,9 @@ def timeit_kruskal_fib_heap(V, E, edges):
 def plotter(num_list, x_list, y_list, z_list):
     import matplotlib.pyplot as plt
 
-    plt.plot(num_list, x_list, label="Default")
-    plt.plot(num_list, y_list, label="vEB Tree impl")
-    plt.plot(num_list, z_list, label="Fibonacci heap impl")
+    plt.plot(num_list, x_list, label="Kruskal implemented by sorting edges")
+    plt.plot(num_list, y_list, label="Kruskal implemented using vEB Tree")
+    plt.plot(num_list, z_list, label="Kruskal implemented using Fibonacci heap")
     plt.legend(loc=0)
     plt.title("Comparison of various kruskal implementations")
     plt.xlabel("Input size")
