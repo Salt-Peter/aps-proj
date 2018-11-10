@@ -39,7 +39,7 @@ def plotter(num_list, x_list, y_list, z_list):
     plt.plot(num_list, y_list, label="vEB Tree impl")
     plt.plot(num_list, z_list, label="Fibonacci heap impl")
     plt.legend(loc=0)
-    plt.title("Comparison")
+    plt.title("Comparison of various kruskal implementations")
     plt.xlabel("Input size")
     plt.ylabel("Time taken")
     plt.show()
