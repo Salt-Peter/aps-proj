@@ -11,7 +11,7 @@ TREE_SIZE = 1024
 class Graph:
     def __init__(self, vertices):
         self.V = vertices  # vertices
-        # A vEB Tree (u,u,weight) form where weight is the key and (u,v,weight) is the satellite data,
+        # A vEB Tree (u,v,weight) form where weight is the key and (u,v,weight) is the satellite data,
         # which indicates a weighted edge incident to nodes u and v
         self.edges = VEBTree(TREE_SIZE)
 
