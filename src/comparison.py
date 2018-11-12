@@ -1,8 +1,9 @@
+# comparison of performance of kruskal vEB Tree with constant tree size(u); u =1024
 import timeit
 
-import kruskal_impl.kruskal_list_sort as kruskal_list_sort
-import kruskal_impl.kruskal_veb as kruskal_veb
-import kruskal_impl.kruskal_fib_heap as kruskal_fib_heap
+import kruskal_list_sort as kruskal_list_sort
+import kruskal_veb as kruskal_veb
+import kruskal_fib_heap as kruskal_fib_heap
 
 
 def timeit_kruskal_list_sort(V, E, edges):
@@ -36,11 +37,11 @@ def plotter(num_list, x_list, y_list, z_list):
     import matplotlib.pyplot as plt
 
     plt.plot(num_list, x_list, label="Kruskal implemented by sorting edges")
-    plt.plot(num_list, y_list, label="Kruskal implemented using vEB Tree")
+    plt.plot(num_list, y_list, label="Kruskal implemented using vEB Tree of universe size 1024")
     plt.plot(num_list, z_list, label="Kruskal implemented using Fibonacci heap")
     plt.legend(loc=0)
     plt.title("Comparison of various kruskal implementations")
-    plt.xlabel("Input size")
+    plt.xlabel("Input size (number of edges)")
     plt.ylabel("Time taken")
     plt.show()
 

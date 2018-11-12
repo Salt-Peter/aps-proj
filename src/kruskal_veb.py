@@ -1,16 +1,24 @@
-from datastructures.fibonacci_heap import FibonacciHeap
+from vEB_with_dups_n_satellite import VEBTree, INSERT, MINIMUM, GET_SATELLITE, DELETE
+import math
+
+
+# In order to implement Kruskal using vEB tree we need to know the range of keys beforehand
+# for implementing Kruskal we will use the edge weights as the keys.
+# So we need to know thw maximum possible edge weight beforehand
+# Let us assume that the maximum possible weight is 1023 (2^10 - 1)
+# so the vEB Tree which could accommodate keys till 1023 should be of size 1024
 
 
 class Graph:
-    def __init__(self, vertices):
+    def __init__(self, vertices, UNIVERSE_SIZE=1024):
         self.V = vertices  # vertices
-        # List to store graph in the (u,v,w) form ,
+        # A vEB Tree (u,v,weight) form where weight is the key and (u,v,weight) is the satellite data,
         # which indicates a weighted edge incident to nodes u and v
-        self.edges = FibonacciHeap()
+        self.edges = VEBTree(2 ** math.ceil(math.log2(UNIVERSE_SIZE)))
 
     # This function inserts a new edge to the graph
     def insert_edge(self, u, v, w):
-        self.edges.insert((w, u, v))
+        INSERT(self.edges, w, [(u, v, w)])
 
     # Find_set implementation using Path compression heuristic
     def find(self, parent, i):
@@ -55,7 +63,10 @@ class Graph:
         while mst_index < self.V - 1:
 
             # Pick the smallest edge and increment index for next iteration
-            w, u, v, = self.edges.extract_min().data
+            w = MINIMUM(self.edges)
+            u, v, w = GET_SATELLITE(self.edges, w)[-1]  # get last edge with specified key
+            DELETE(self.edges, w)  # delete that edge
+
             index += 1
             u_parent = self.find(parent, u)
             v_parent = self.find(parent, v)
@@ -84,7 +95,8 @@ class Graph:
 
 if __name__ == "__main__":
     V, E = map(int, input().split())
-    g = Graph(V)
+
+    g = Graph(V, UNIVERSE_SIZE=2 ** math.ceil(math.log2(E)))
     for _ in range(E):
         u, v, w = map(int, input().split())
         g.insert_edge(u, v, w)
