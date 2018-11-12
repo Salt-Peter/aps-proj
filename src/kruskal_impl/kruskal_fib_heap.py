@@ -1,6 +1,3 @@
-from fibonacci_heap import FibonacciHeap
-
-
 class Graph:
     def __init__(self, vertices):
         self.V = vertices  # vertices
@@ -85,6 +82,8 @@ class Graph:
 
 
 if __name__ == "__main__":
+    from datastructures.fibonacci_heap import FibonacciHeap
+
     V, E = map(int, input().split())
     g = Graph(V)
     for _ in range(E):
@@ -92,3 +91,5 @@ if __name__ == "__main__":
         g.insert_edge(u, v, w)
 
     print(g.kruskal(show_mst=False))
+else:
+    from .datastructures.fibonacci_heap import FibonacciHeap

@@ -1,10 +1,6 @@
 # comparison of performance of kruskal vEB Tree with constant tree size(u); u =1024
 import timeit
 
-import kruskal_list_sort as kruskal_list_sort
-import kruskal_veb as kruskal_veb
-import kruskal_fib_heap as kruskal_fib_heap
-
 
 def timeit_kruskal_list_sort(V, E, edges):
     g = kruskal_list_sort.Graph(V)
@@ -47,6 +43,8 @@ def plotter(num_list, x_list, y_list, z_list):
 
 
 if __name__ == "__main__":
+    from kruskal_impl import kruskal_veb, kruskal_list_sort, kruskal_fib_heap
+
     # setup code
     files = [
         "tests/input/1",
@@ -95,3 +93,5 @@ if __name__ == "__main__":
         print()
 
     plotter(num_list, x_list, y_list, z_list)
+else:
+    from .kruskal_impl import kruskal_veb, kruskal_list_sort, kruskal_fib_heap

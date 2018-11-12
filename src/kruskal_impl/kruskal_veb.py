@@ -1,4 +1,3 @@
-from vEB_with_dups_n_satellite import VEBTree, INSERT, MINIMUM, GET_SATELLITE, DELETE
 import math
 
 
@@ -96,11 +95,15 @@ class Graph:
 
 
 if __name__ == "__main__":
+    from datastructures.vEB_with_dups_n_satellite import VEBTree, INSERT, MINIMUM, GET_SATELLITE, DELETE
+
     V, E = map(int, input().split())
 
-    g = Graph(V, UNIVERSE_SIZE=2 ** math.ceil(math.log2(E)))
+    g = Graph(V, UNIVERSE_SIZE=max(2 ** math.ceil(math.log2(E)), 1024))
     for _ in range(E):
         u, v, w = map(int, input().split())
         g.insert_edge(u, v, w)
 
     print(g.kruskal(show_mst=False))
+else:
+    from .datastructures.vEB_with_dups_n_satellite import VEBTree, INSERT, MINIMUM, GET_SATELLITE, DELETE
