@@ -42,7 +42,7 @@ class Graph:
             print(parent[i], ",", end=" ")
         print()
 
-    def kruskal(self):
+    def kruskal(self, show_mst=False):
         mst = []  # This will store the resulting Minimum Spanning Tree
 
         rank = [0] * self.V  # Initialize each node's rank as 0
@@ -72,10 +72,12 @@ class Graph:
             # else discard this edge
 
         # Print the Minimum cost spanning tree
-        # print("The minimum spanning tree is as follows")
+        if show_mst:
+            print("The minimum spanning tree is as follows")
         cost = 0
         for u, v, weight in mst:
-            # print("%d -- %d == %d" % (u, v, weight))
+            if show_mst:
+                print("%d -- %d == %d" % (u, v, weight))
             cost += weight
 
         return cost
@@ -89,4 +91,4 @@ if __name__ == "__main__":
         u, v, w = map(int, input().split())
         g.insert_edge(u, v, w)
 
-    print(g.kruskal())
+    print(g.kruskal(show_mst=False))
