@@ -1,32 +1,48 @@
 # comparison of performance of kruskal vEB Tree with constant tree size(u); u =1024
-import timeit
+import time
 
 
 def timeit_kruskal_list_sort(V, E, edges):
+    x_start = time.process_time()
+
     g = kruskal_list_sort.Graph(V)
     for edge in edges:
         u, v, w = edge
         g.insert_edge(u, v, w)
 
     g.kruskal()
+    x_end = time.process_time()
+    print("List sort impl", x_end - x_start)
+    return x_end - x_start
 
 
 def timeit_kruskal_veb(V, E, edges):
     g = kruskal_veb.Graph(V)
+
+    x_start = time.process_time()
     for edge in edges:
         u, v, w = edge
         g.insert_edge(u, v, w)
 
     g.kruskal()
+    x_end = time.process_time()
+    print("vEB Tree impl", x_end - x_start)
+    return x_end - x_start
 
 
 def timeit_kruskal_fib_heap(V, E, edges):
+    x_start = time.perf_counter()
+
     g = kruskal_fib_heap.Graph(V)
     for edge in edges:
         u, v, w = edge
         g.insert_edge(u, v, w)
 
     g.kruskal()
+
+    x_end = time.perf_counter()
+    print("Fib heap", x_end - x_start)
+    return x_end - x_start
 
 
 def plotter(num_list, x_list, y_list, z_list):
@@ -38,7 +54,7 @@ def plotter(num_list, x_list, y_list, z_list):
     plt.legend(loc=0)
     plt.title("Comparison of various kruskal implementations")
     plt.xlabel("Input size (number of edges)")
-    plt.ylabel("Time taken")
+    plt.ylabel("Time taken (in seconds)")
     plt.show()
 
 
@@ -46,51 +62,24 @@ if __name__ == "__main__":
     from kruskal_impl import kruskal_veb, kruskal_list_sort, kruskal_fib_heap
 
     # setup code
-    files = [
-        "tests/input/1",
-        "tests/input/2",
-        "tests/input/3",
-        "tests/input/4",
-        "tests/input/5",
-        "tests/input/6",
-        "tests/input/7",
-        "tests/input/8",
-        "tests/input/9",
-        "tests/input/10",
-    ]
-    num_list = [10, 21, 55, 105, 153, 300, 630, 1225, 2556, 4950]
+    num_list = []
     x_list, y_list, z_list = [], [], []
+    NUM_TEST_CASES = 11
 
-    for filename in files:
-        fp = open(filename)
+    for i in range(1, NUM_TEST_CASES + 1):
+        fp = open("tests/input/" + str(i))
         V, E = map(int, fp.readline().split())
         edges = []
+        num_list.append(E)
         for _ in range(E):
             u, v, w = map(int, fp.readline().split())
             edges.append((u, v, w))
         fp.close()
 
-        num = 100
-
-        x = timeit.Timer('timeit_kruskal_list_sort(V,E,edges)',
-                         setup="from __main__ import timeit_kruskal_list_sort",
-                         globals=globals()).timeit(number=num)
-        print(x)
-        x_list.append(x)
-
-        y = timeit.Timer('timeit_kruskal_veb(V,E,edges)',
-                         setup="from __main__ import timeit_kruskal_veb",
-                         globals=globals()).timeit(number=num)
-        print(y)
-        y_list.append(y)
-
-        z = timeit.Timer('timeit_kruskal_fib_heap(V,E,edges)',
-                         setup="from __main__ import timeit_kruskal_fib_heap",
-                         globals=globals()).timeit(number=num)
-        print(z)
-        z_list.append(z)
-
-        print()
+        print("\nTest case: ", i)
+        x_list.append(timeit_kruskal_list_sort(V, E, edges))
+        y_list.append(timeit_kruskal_veb(V, E, edges))
+        z_list.append(timeit_kruskal_fib_heap(V, E, edges))
 
     plotter(num_list, x_list, y_list, z_list)
 else:
