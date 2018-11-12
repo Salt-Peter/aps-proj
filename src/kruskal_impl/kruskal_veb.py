@@ -63,7 +63,7 @@ class Graph:
 
             # Pick the smallest edge and increment index for next iteration
             w = MINIMUM(self.edges)
-            u, v, w = GET_SATELLITE(self.edges, w)[0]  # get first edge with specified key
+            u, v, w = GET_SATELLITE(self.edges, w)[-1]  # get last edge with specified key
             DELETE(self.edges, w)  # delete that edge
 
             index += 1

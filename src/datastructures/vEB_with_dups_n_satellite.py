@@ -158,15 +158,15 @@ def DELETE(V, x, n=1):
             # more copies of the element than is to be removed
             V.min_cnt -= n
             V.max_cnt -= n
-            del V.min_data[:n]  # pops n elements from front of the list
-            del V.max_data[:n]  # pops n elements from front of the list
+            del V.min_data[-n:]  # pops n elements from end of the list
+            del V.max_data[-n:]  # pops n elements from end of the list
 
         return
 
     if V.u == 2:
         if x == 0:  # element to be removed is the min element
             V.min_cnt -= n
-            del V.min_data[:n]
+            del V.min_data[-n:]
 
             if V.min_cnt == 0:  # all elements of min key removed
                 V.min = 1
@@ -174,7 +174,7 @@ def DELETE(V, x, n=1):
                 V.min_data = copy(V.max_data)
         else:
             V.max_cnt -= n
-            del V.max_data[:n]
+            del V.max_data[-n:]
 
             if V.max_cnt == 0:
                 V.max = 0
@@ -186,7 +186,7 @@ def DELETE(V, x, n=1):
     if x == V.min:
         if V.min_cnt > n:
             V.min_cnt -= n
-            del V.min_data[:n]
+            del V.min_data[-n:]
             return
 
         first_cluster = MINIMUM(V.summary)
@@ -208,7 +208,7 @@ def DELETE(V, x, n=1):
                 V.max_data = copy(V.min_data)
                 return
             V.max_cnt -= n
-            del V.max_data[:n]
+            del V.max_data[-n:]
 
             if V.max_cnt == 0:
                 summary_max = MAXIMUM(V.summary)
@@ -229,7 +229,7 @@ def DELETE(V, x, n=1):
             V.max_data = copy(V.min_data)
             return
         V.max_cnt -= n
-        del V.max_data[:n]
+        del V.max_data[-n:]
 
         if V.max_cnt == 0:
             V.max = V.index(V.high(x),
