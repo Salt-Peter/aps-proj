@@ -3,7 +3,7 @@ import time
 
 
 def timeit_kruskal_list_sort(V, E, edges):
-    x_start = time.process_time()
+    x_start = time.clock()
 
     g = kruskal_list_sort.Graph(V)
     for edge in edges:
@@ -11,7 +11,7 @@ def timeit_kruskal_list_sort(V, E, edges):
         g.insert_edge(u, v, w)
 
     g.kruskal()
-    x_end = time.process_time()
+    x_end = time.clock()
     print("List sort impl", x_end - x_start)
     return x_end - x_start
 
@@ -19,19 +19,19 @@ def timeit_kruskal_list_sort(V, E, edges):
 def timeit_kruskal_veb(V, E, edges):
     g = kruskal_veb.Graph(V)
 
-    x_start = time.process_time()
+    x_start = time.clock()
     for edge in edges:
         u, v, w = edge
         g.insert_edge(u, v, w)
 
     g.kruskal()
-    x_end = time.process_time()
+    x_end = time.clock()
     print("vEB Tree impl", x_end - x_start)
     return x_end - x_start
 
 
 def timeit_kruskal_fib_heap(V, E, edges):
-    x_start = time.perf_counter()
+    x_start = time.clock()
 
     g = kruskal_fib_heap.Graph(V)
     for edge in edges:
@@ -40,7 +40,7 @@ def timeit_kruskal_fib_heap(V, E, edges):
 
     g.kruskal()
 
-    x_end = time.perf_counter()
+    x_end = time.clock()
     print("Fib heap", x_end - x_start)
     return x_end - x_start
 
